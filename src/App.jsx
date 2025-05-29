@@ -6,8 +6,6 @@ import MessageBox from './components/MessageBox';
 import LoadingIndicator from './components/LoadingIndicator';
 import Footer from './components/Footer';
 
-const API_BASE_URL = 'https://www.themealdb.com/api/json/v1/1/';
-
 const App = () => {
   const [query, setQuery] = useState('');
   const [meals, setMeals] = useState([]);
@@ -15,6 +13,8 @@ const App = () => {
   const [message, setMessage] = useState(null);
   const [modalMeal, setModalMeal] = useState(null);
 
+  const API_BASE_URL = 'https://www.themealdb.com/api/json/v1/1/';
+  
   const showMessage = (text, type = 'info') => {
     setMessage({ text, type });
     setTimeout(() => setMessage(null), 5000);
@@ -22,7 +22,6 @@ const App = () => {
 
   const fetchMeals = async (endpoint) => {
     setLoading(true);
-    setMeals([]);
     setMessage(null);
     try {
       const res = await fetch(`${API_BASE_URL}${endpoint}`);
@@ -38,142 +37,59 @@ const App = () => {
   };
 
   const searchMealByName = async () => {
-    if (!query.trim()) {
-      showMessage('Por favor, introduce un nombre para buscar.', 'info');
-      return;
-    }
+    if (!query.trim()) return showMessage('Por favor, introduce un nombre para buscar.', 'info');
     const data = await fetchMeals(`search.php?s=${query}`);
-    if (data?.meals) {
-      setMeals(data.meals);
-    } else {
-      showMessage(`No se encontraron recetas para "${query}".`, 'info');
-    }
-  };
-
-  const getRandomMeal = async () => {
-    const data = await fetchMeals('random.php');
-    if (data?.meals) {
-      setMeals(data.meals);
-    } else {
-      showMessage('No se pudo cargar una receta aleatoria.', 'error');
-    }
+    if (data?.meals) setMeals(data.meals);
+    else showMessage(`No se encontraron recetas para "${query}".`, 'info');
   };
 
   const getMealDetailsById = async (id) => {
     const data = await fetchMeals(`lookup.php?i=${id}`);
-    if (data?.meals?.length) {
-      setModalMeal(data.meals[0]);
-    } else {
-      showMessage('No se pudieron cargar los detalles de la receta.', 'error');
-    }
+    if (data?.meals?.length) setModalMeal(data.meals[0]);
+    else showMessage('No se pudieron cargar los detalles de la receta.', 'error');
   };
 
+  const getRandomMeals = async () => {
+    setLoading(true);
+    setMeals([]);
+    setMessage(null);
+    try {
+      const requests = Array.from({ length: 20 }, () => fetch(`${API_BASE_URL}random.php`).then(res => res.json()));
+      const results = await Promise.all(requests);
+      const allMeals = results
+        .map(r => r.meals && r.meals[0])
+        .filter(Boolean);
+      const uniqueMeals = Array.from(new Map(allMeals.map(m => [m.idMeal, m])).values());
+      setMeals(uniqueMeals);
+      if (!uniqueMeals.length) showMessage('No se encontraron recetas iniciales.', 'info');
+    } catch (err) {
+      showMessage(`Error al cargar recetas iniciales: ${err.message}`, 'error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    getRandomMeal();
+    getRandomMeals();
   }, []);
 
   return (
-    <div className="app-container">
-      <h1 className="text-4xl md:text-5xl font-extrabold mb-8">GourmetGrid.com</h1>
-      <div className="input-group">
-        <input
-          type="text"
-          id="search-input"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              searchMealByName();
-            }
-          }}
-          placeholder="Busca una receta por nombre..."
-          className="flex-grow"
+    <>
+      <div className="app-container">
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-8">GourmetGrid.com</h1>
+        <SearchBar 
+          query={query} 
+          setQuery={setQuery} 
+          searchMealByName={searchMealByName} 
+          getRandomMeals={getRandomMeals} 
         />
-        <button id="search-btn" onClick={searchMealByName} className="btn">
-          <i className="fas fa-search"></i> Buscar Receta
-        </button>
-        <button id="random-meal-btn" onClick={getRandomMeal} className="btn">
-          <i className="fas fa-dice"></i> Receta Aleatoria
-        </button>
+        <MessageBox message={message} />
+        <LoadingIndicator loading={loading} />
+        <MealList meals={meals} getMealDetailsById={getMealDetailsById} />
+        <ModalRecipe modalMeal={modalMeal} setModalMeal={setModalMeal} />
       </div>
-
-      {message && (
-        <div id="message-box" className={`message-box show ${message.type}`}>
-          {message.text}
-        </div>
-      )}
-
-      <div id="loading-indicator" className={`loading-indicator ${loading ? 'show' : 'hidden'}`}>
-        <i className="fas fa-spinner fa-spin mr-2"></i> Cargando recetas...
-      </div>
-
-      <div id="meal-results" className="meal-results">
-        {meals.map((meal) => (
-          <div key={meal.idMeal} className="meal-card">
-            <img src={meal.strMealThumb} alt={meal.strMeal} />
-            <div className="meal-card-content">
-              <h3>{meal.strMeal}</h3>
-              <button
-                className="btn btn-view-recipe"
-                onClick={() => getMealDetailsById(meal.idMeal)}
-              >
-                Ver Receta <i className="fas fa-arrow-right ml-2"></i>
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {modalMeal && (
-        <div id="recipe-modal-overlay" className="modal-overlay show" onClick={(e) => {
-          if (e.target.id === 'recipe-modal-overlay') {
-            setModalMeal(null);
-          }
-        }}>
-          <div className="modal-content">
-            <button
-              id="modal-close-btn"
-              onClick={() => setModalMeal(null)}
-              className="modal-close-btn"
-            >&times;</button>
-            <h2 id="modal-meal-name">{modalMeal.strMeal}</h2>
-            <img
-              id="modal-meal-image"
-              src={modalMeal.strMealThumb}
-              alt="Imagen de la receta"
-            />
-            <p className="text-gray-400 text-center mb-4">
-              <span id="modal-meal-category">{modalMeal.strCategory || 'N/A'}</span> |{' '}
-              <span id="modal-meal-area">{modalMeal.strArea || 'N/A'}</span>
-            </p>
-            <h3>Ingredientes</h3>
-            <ul id="modal-ingredients-list">
-              {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => {
-                const ing = modalMeal[`strIngredient${n}`];
-                const msr = modalMeal[`strMeasure${n}`];
-                return ing && ing.trim() ? <li key={n}>{`${msr ? msr.trim() : ''} ${ing.trim()}`}</li> : null;
-              })}
-            </ul>
-            <h3>Instrucciones</h3>
-            <p id="modal-instructions">{modalMeal.strInstructions}</p>
-            {modalMeal.strYoutube && (
-              <>
-                <h3 id="modal-youtube-title">Video de YouTube</h3>
-                <a
-                  id="modal-youtube-link"
-                  href={modalMeal.strYoutube}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-center mt-4"
-                >
-                  Ver video en YouTube <i className="fab fa-youtube ml-2"></i>
-                </a>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+      <Footer/>
+    </>
   );
 };
 

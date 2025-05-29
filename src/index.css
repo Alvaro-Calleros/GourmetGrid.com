@@ -1,7 +1,7 @@
 :root {
     --color-dark-bg: #1a1a1a;
     --color-dark-card: #2a2a2a;
-    --color-green-accent: #4CAF50;
+    --color-green-accent: #4CAF50; 
     --color-green-hover: #45a049;
     --color-text-light: #e0e0e0;
     --color-text-dark: #333;
@@ -15,27 +15,25 @@ body {
     background-color: var(--color-dark-bg);
     color: var(--color-text-light);
     display: flex;
-    flex-direction: column; 
     justify-content: center;
-    align-items: center; 
+    align-items: flex-start;
     min-height: 100vh;
     padding: 2rem 1rem;
     box-sizing: border-box;
     overflow-y: auto;
 }
-
 .app-container {
     width: 100%;
     max-width: 1200px;
     background-color: var(--color-dark-card);
-    border-radius: 1.5rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border-radius: 1.5rem; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
     padding: 2.5rem;
     border: 1px solid var(--color-border);
     animation: fadeIn 0.8s ease-out;
-    display: flex;
-    flex-direction: column;
+    margin: 0 auto;
 }
+
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
@@ -43,9 +41,10 @@ body {
 }
 
 h1 {
+    text-size-adjust: 125%;
     font-size: 2.8rem;
     color: var(--color-green-accent);
-    text-shadow: 0 0 10px rgba(76, 175, 80, 0.6);
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.6); 
     font-weight: 700;
     margin-bottom: 2rem;
     text-align: center;
@@ -55,7 +54,7 @@ h1 {
     display: flex;
     gap: 1rem;
     margin-bottom: 2rem;
-    flex-wrap: wrap;
+    flex-wrap: wrap; 
     justify-content: center;
 }
 
@@ -69,7 +68,7 @@ h1 {
     font-size: 1.1rem;
     outline: none;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    max-width: 400px;
+    max-width: 400px; 
 }
 
 .input-group input:focus {
@@ -105,7 +104,16 @@ h1 {
 
 .meal-results {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-rows: auto;
+    grid-auto-rows: minmax(300px, auto);
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    padding: 1.5rem;
+    background-color: var(--color-dark-bg);
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--color-border);
+    width: 100%;
+    max-width: 1200px;
     gap: 1.5rem;
     margin-top: 2rem;
 }
@@ -128,12 +136,12 @@ h1 {
 
 .meal-card img {
     width: 100%;
-    height: 400px;
+    aspect-ratio: 4/3; /* Mantiene proporción responsiva */
     object-fit: cover;
     border-bottom: 1px solid var(--color-border);
     transition: transform 0.3s ease;
+    display: block;
 }
-
 .meal-card:hover img {
     transform: scale(1.05);
 }
@@ -183,7 +191,7 @@ h1 {
 }
 
 .message-box.error {
-    background-color: rgba(239, 68, 68, 0.2);
+    background-color: rgba(239, 68, 68, 0.2); 
     color: var(--color-error);
     border: 1px solid rgba(239, 68, 68, 0.5);
 }
@@ -273,6 +281,9 @@ h1 {
     border-radius: 1rem;
     margin-bottom: 1.5rem;
     border: 1px solid var(--color-border);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .modal-content h3 {
@@ -313,16 +324,17 @@ h1 {
 .modal-content a:hover {
     color: var(--color-green-hover);
 }
-
-.footer { /* Footer pendiente */
+.footer {
+    display: grid;
     text-align: center;
-    margin-top: 3rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--color-border);
+    margin-top: 2rem;
+    padding-top: 1.5rem; 
+    border-top: 1px solid var(--color-border); 
     color: var(--color-text-light);
-    font-size: 0.9rem;
-    width: 100%;
+    font-size: 1.5rem;
+    width: 100%; 
 }
+
 
 @media (max-width: 768px) {
     .app-container {
