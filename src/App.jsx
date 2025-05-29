@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import SearchBar from './components/SearchBar';
+import MealList from './components/MealList';
+import ModalRecipe from './components/ModalRecipe';
+import MessageBox from './components/MessageBox';
+import LoadingIndicator from './components/LoadingIndicator';
+import Footer from './components/Footer';
 
 const API_BASE_URL = 'https://www.themealdb.com/api/json/v1/1/';
 
@@ -68,7 +74,7 @@ const App = () => {
 
   return (
     <div className="app-container">
-      <h1 className="text-4xl md:text-5xl font-extrabold mb-8">GourmetGrill.com</h1>
+      <h1 className="text-4xl md:text-5xl font-extrabold mb-8">GourmetGrid.com</h1>
       <div className="input-group">
         <input
           type="text"
