@@ -1,7 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const ModalRecipe = ({ modalMeal, setModalMeal }) => {
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    if (modalMeal) {
+      // Comprobar si esta receta ya está en favoritos
+      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+      const isAlreadyFavorite = favorites.some(fav => fav.idMeal === modalMeal.idMeal);
+      setIsFavorite(isAlreadyFavorite);
+    }
+  }, [modalMeal]);
+
   if (!modalMeal) return null;
+
+  const toggleFavorite = () => {
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    
+    if (isFavorite) {
+      // Eliminar de favoritos
+      const newFavorites = favorites.filter(fav => fav.idMeal !== modalMeal.idMeal);
+      localStorage.setItem('favorites', JSON.stringify(newFavorites));
+    } else {
+      // Añadir a favoritos
+      const mealToSave = {
+        idMeal: modalMeal.idMeal,
+        strMeal: modalMeal.strMeal,
+        strMealThumb: modalMeal.strMealThumb
+      };
+      localStorage.setItem('favorites', JSON.stringify([...favorites, mealToSave]));
+    }
+    
+    setIsFavorite(!isFavorite);
+  };
 
   const ingredients = Array.from({ length: 20 }, (_, i) => {
     const ing = modalMeal[`strIngredient${i+1}`];
@@ -27,6 +58,17 @@ const ModalRecipe = ({ modalMeal, setModalMeal }) => {
           onClick={() => setModalMeal(null)}
         >
           &times;
+        </button>
+
+        <button 
+          className={`modal-favorite-button ${isFavorite ? 'is-favorite' : ''}`}
+          onClick={toggleFavorite}
+          aria-label={isFavorite ? "Quitar de favoritos" : "Añadir a favoritos"}
+        >
+          <i className={`fas ${isFavorite ? 'fa-heart' : 'fa-heart-o'}`}></i>
+          <span style={{ marginLeft: '0.5rem', fontWeight: 600, color: 'white', fontSize: '1rem' }}>
+            {isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+          </span>
         </button>
 
         <h2 className="modal-title">{modalMeal.strMeal}</h2>
