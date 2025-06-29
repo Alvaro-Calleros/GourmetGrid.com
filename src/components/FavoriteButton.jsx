@@ -1,34 +1,32 @@
 import React, { useState, useEffect } from 'react';
+import { getFavoritesFromStorage, saveFavoritesToStorage } from '../utils/favorites';
 
-const FavoriteButton = ({ meal }) => {
+const FavoriteButton = ({ meal, username }) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    // Comprobar si esta receta ya está en favoritos
-    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const favorites = getFavoritesFromStorage(username);
     const isAlreadyFavorite = favorites.some(fav => fav.idMeal === meal.idMeal);
     setIsFavorite(isAlreadyFavorite);
-  }, [meal.idMeal]);
+  }, [meal.idMeal, username]);
 
   const toggleFavorite = (e) => {
     e.stopPropagation();
-    
-    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    
+    const favorites = getFavoritesFromStorage(username);
+
+    let updatedFavorites;
     if (isFavorite) {
-      // Eliminar de favoritos
-      const newFavorites = favorites.filter(fav => fav.idMeal !== meal.idMeal);
-      localStorage.setItem('favorites', JSON.stringify(newFavorites));
+      updatedFavorites = favorites.filter(fav => fav.idMeal !== meal.idMeal);
     } else {
-      // Añadir a favoritos
       const mealToSave = {
         idMeal: meal.idMeal,
         strMeal: meal.strMeal,
         strMealThumb: meal.strMealThumb
       };
-      localStorage.setItem('favorites', JSON.stringify([...favorites, mealToSave]));
+      updatedFavorites = [...favorites, mealToSave];
     }
-    
+
+    saveFavoritesToStorage(username, updatedFavorites);
     setIsFavorite(!isFavorite);
   };
 
