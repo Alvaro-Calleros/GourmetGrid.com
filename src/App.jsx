@@ -10,7 +10,7 @@ import AreaFilter from './components/AreaFilter';
 import FavoritesView from './components/FavoritesView';
 import Pagination from './components/Pagination';
 
-const App = () => {
+export default function App({onLogout, username}) {
   const [query, setQuery] = useState('');
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -157,6 +157,7 @@ const App = () => {
     <>
       <div className="app-container">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-8">GourmetGrid.com</h1>
+        <h2>Bienvenido, {username}</h2>
         
         <nav className="main-nav">
           <button 
@@ -197,7 +198,10 @@ const App = () => {
         <LoadingIndicator loading={loading} />
         
         {activeView === 'favorites' ? (
-          <FavoritesView getMealDetailsById={getMealDetailsById} />
+          <FavoritesView 
+            getMealDetailsById={getMealDetailsById}
+            username={username}
+          />
         ) : (
           <>
             {activeFilter && (
@@ -227,11 +231,12 @@ const App = () => {
           </>
         )}
         
-        <ModalRecipe modalMeal={modalMeal} setModalMeal={setModalMeal} />
+        <ModalRecipe modalMeal={modalMeal} setModalMeal={setModalMeal} username={username}/>
         <Footer />
+
+        
+        <button onClick={onLogout}>Cerrar Sesion</button>
       </div>
     </>
   );
 };
-
-export default App;

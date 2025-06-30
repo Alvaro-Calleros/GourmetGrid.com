@@ -1,38 +1,37 @@
 import React, { useState, useEffect } from 'react';
+import { getFavoritesFromStorage, saveFavoritesToStorage } from '../utils/favorites';
 
-const ModalRecipe = ({ modalMeal, setModalMeal }) => {
+const ModalRecipe = ({ modalMeal, setModalMeal, username }) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    if (modalMeal) {
-      // Comprobar si esta receta ya está en favoritos
-      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-      const isAlreadyFavorite = favorites.some(fav => fav.idMeal === modalMeal.idMeal);
-      setIsFavorite(isAlreadyFavorite);
-    }
-  }, [modalMeal]);
+  if (modalMeal && username) {
+    const favorites = getFavoritesFromStorage(username);
+    const isAlreadyFavorite = favorites.some(fav => fav.idMeal === modalMeal.idMeal);
+    setIsFavorite(isAlreadyFavorite);
+  }
+}, [modalMeal, username]);
 
   if (!modalMeal) return null;
 
   const toggleFavorite = () => {
-    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    
-    if (isFavorite) {
-      // Eliminar de favoritos
-      const newFavorites = favorites.filter(fav => fav.idMeal !== modalMeal.idMeal);
-      localStorage.setItem('favorites', JSON.stringify(newFavorites));
-    } else {
-      // Añadir a favoritos
-      const mealToSave = {
-        idMeal: modalMeal.idMeal,
-        strMeal: modalMeal.strMeal,
-        strMealThumb: modalMeal.strMealThumb
-      };
-      localStorage.setItem('favorites', JSON.stringify([...favorites, mealToSave]));
-    }
-    
-    setIsFavorite(!isFavorite);
-  };
+  const favorites = getFavoritesFromStorage(username);
+
+  let updatedFavorites;
+  if (isFavorite) {
+    updatedFavorites = favorites.filter(fav => fav.idMeal !== modalMeal.idMeal);
+  } else {
+    const mealToSave = {
+      idMeal: modalMeal.idMeal,
+      strMeal: modalMeal.strMeal,
+      strMealThumb: modalMeal.strMealThumb
+    };
+    updatedFavorites = [...favorites, mealToSave];
+  }
+
+  saveFavoritesToStorage(username, updatedFavorites);
+  setIsFavorite(!isFavorite);
+};
 
   const ingredients = Array.from({ length: 20 }, (_, i) => {
     const ing = modalMeal[`strIngredient${i+1}`];

@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import MealCard from './MealCard';
+import { getFavoritesFromStorage, saveFavoritesToStorage } from '../utils/favorites';
 
-const FavoritesView = ({ getMealDetailsById }) => {
+const FavoritesView = ({ getMealDetailsById, username }) => {
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
-    const storedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    setFavorites(storedFavorites);
-  }, []);
+    setFavorites(getFavoritesFromStorage(username));
+  }, [username]);
 
   const removeFavorite = (idMeal) => {
     const updatedFavorites = favorites.filter(fav => fav.idMeal !== idMeal);
-    localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+    saveFavoritesToStorage(username, updatedFavorites);
     setFavorites(updatedFavorites);
   };
 
@@ -33,7 +33,7 @@ const FavoritesView = ({ getMealDetailsById }) => {
       <div className="meal-results">
         {favorites.map((meal) => (
           <div key={meal.idMeal} className="favorite-meal-container">
-            <MealCard meal={meal} onShowDetails={getMealDetailsById} />
+            <MealCard meal={meal} onShowDetails={getMealDetailsById} username={username}/>
             <button 
               className="remove-favorite-button"
               onClick={() => removeFavorite(meal.idMeal)}
