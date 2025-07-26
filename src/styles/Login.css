@@ -1,0 +1,65 @@
+.login-section {
+  background-color: var(--color-dark-card);
+  border: 1px solid var(--color-border);
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-section label {
+  color: var(--color-text-light);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-section input {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background-color: #1f1f1f;
+  color: var(--color-text-light);
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-section input:focus {
+  border-color: var(--color-green-accent);
+  outline: none;
+}
+
+.button-submit {
+  background-color: var(--color-green-accent);
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-submit:hover {
+  background-color: var(--color-green-hover);
+}
+
+.form-error {
+  margin-top: 1rem;
+  color: var(--color-error);
+  font-weight: 600;
+  text-align: center;
+}

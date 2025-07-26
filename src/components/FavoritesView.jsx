@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import MealCard from './MealCard';
-import { getFavoritesFromStorage, saveFavoritesToStorage } from '../utils/favorites';
+import React, { useState, useEffect } from "react";
+import MealCard from "./MealCard";
+import { getFavoritesFromStorage, saveFavoritesToStorage } from "../utils/favorites";
 
 const FavoritesView = ({ getMealDetailsById, username }) => {
   const [favorites, setFavorites] = useState([]);
@@ -10,7 +10,7 @@ const FavoritesView = ({ getMealDetailsById, username }) => {
   }, [username]);
 
   const removeFavorite = (idMeal) => {
-    const updatedFavorites = favorites.filter(fav => fav.idMeal !== idMeal);
+    const updatedFavorites = favorites.filter((fav) => fav.idMeal !== idMeal);
     saveFavoritesToStorage(username, updatedFavorites);
     setFavorites(updatedFavorites);
   };
@@ -33,9 +33,13 @@ const FavoritesView = ({ getMealDetailsById, username }) => {
       <div className="meal-results">
         {favorites.map((meal) => (
           <div key={meal.idMeal} className="favorite-meal-container">
-            <MealCard meal={meal} onShowDetails={getMealDetailsById} username={username}/>
-            <button 
-              className="remove-favorite-button"
+            <MealCard
+              meal={meal}
+              onShowDetails={getMealDetailsById}
+              username={username}
+            />
+            <button
+              className=" btn remove-favorite-button"
               onClick={() => removeFavorite(meal.idMeal)}
             >
               <i className="fas fa-trash"></i> Eliminar
